@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+import time
 
 service = Service("C:\\Users\\camer\\Downloads\\chromedriver.exe")
 
@@ -21,9 +22,20 @@ def get_driver():
     return driver
 
 
+
+def clean_text(text):
+    # extract only temp from text
+    output = float(text.split(": ")[1]) # split the text by ": " and take the second part, then convert it to a float... this assumes the text is in the format "Temperature: 20.5"
+    return output
+
+
+
 def main():
     driver = get_driver()
-    element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[1]")
-    return element.text
+    time.sleep(5) # wait for the page to load before trying to find the element 
+    element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[2]")
+    return clean_text(element.text)
+
+
 
 print(main())
