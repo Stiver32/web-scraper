@@ -24,17 +24,17 @@ def get_driver(): # function get_driver will set up and return a Chrome WebDrive
     options.add_experimental_option("excludeSwitches", ["enable-automation"]) # option to exclude the "enable-automation" switch
     options.add_argument("disable-blink-features=AutomationControlled") # option to disable the "AutomationControlled" feature
     
-    
-    driver = webdriver.Chrome(service=service)
+    #
+    driver = webdriver.Chrome(service=service) # create a new instance of the Chrome WebDriver using the specified service and options. 
     driver.get("http://automated.pythonanywhere.com/login/") # connect driver to a webpage
     return driver
 
 
 
-# def clean_text(text):
-#     # extract only temp from text
-#     output = float(text.split(": ")[1]) # split the text by ": " and take the second part, then convert it to a float... this assumes the text is in the format "Temperature: 20.5"
-#     return output
+def clean_text(text):
+    # extract only temp from text
+    output = float(text.split(": ")[1]) # split the text by ": " and take the second part, then convert it to a float... this assumes the text is in the format "Temperature: 20.5"
+    return output
 
 
 
@@ -48,11 +48,10 @@ def main():
     time.sleep(2) # wait for 2 seconds to allow the page to load properly before proceeding to the next step
     
     driver.find_element(by="xpath", value="/html/body/nav/div/a").click()
+    time.sleep(5) # wait for 2 seconds to allow the page to load properly before proceeding to the next step
     
-    print(driver.current_url) # print the current URL to verify that we have navigated to the correct page after logging in
-    
-    # element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[2]") # find the element containing the temperature information using its XPath. This assumes that temp is located in an <h1> tag at the specified location in the HTML structure of the page.
-    # return clean_text(element.text) # get text content of the element, clean it w/ the clean_text function to extract the temp value, return it as a float.
+    element = driver.find_element(by="xpath", value="/html/body/div[1]/h1[2]").text # find the element containing the temperature information using its XPath. This assumes that temp is located in an <h1> tag at the specified location in the HTML structure of the page.
+    return clean_text(element) # get text content of the element, clean it w/ the clean_text function to extract the temp value, return it as a float.
 
 
 
