@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys # import the Keys class from the
 
 import time # import the time module, which will be used to introduce a delay (using time.sleep) to allow the web page to load before attempting to find and interact with elements on the page.
 
-
+from datetime import datetime as dt # import the datetime class from the datetime module and alias it as dt. This will be used to generate timestamps for the filenames when saving the temperature data.
 
 
 
@@ -26,7 +26,7 @@ def get_driver(): # function get_driver will set up and return a Chrome WebDrive
     
     #
     driver = webdriver.Chrome(service=service) # create a new instance of the Chrome WebDriver using the specified service and options. 
-    driver.get("http://automated.pythonanywhere.com/login/") # connect driver to a webpage
+    driver.get("http://automated.pythonanywhere.com") # connect driver to a webpage
     return driver
 
 
@@ -36,22 +36,24 @@ def clean_text(text):
     output = float(text.split(": ")[1]) # split the text by ": " and take the second part, then convert it to a float... this assumes the text is in the format "Temperature: 20.5"
     return output
 
-
+def write_file(text):
+    # create a filename based on the current date and time, formatted as "YYYY-MM-DD.HH-MM-SS.txt"
+    filename = f"{dt.now().strftime('%Y-%m-%d.%H-%M-%S')}.txt" 
+    
+    with open(filename, "w") as f: # open the file in write mode
+        f.write(text)
 
 def main():
     driver = get_driver()
+    loop_num = 5 # number of iterations to run the loop
     
-    driver.find_element(by="id", value="id_username").send_keys("automated") # find the username input field by its id and enter the username "automated"
-    time.sleep(2) # wait for 2 seconds to allow the page to load properly before proceeding to the next step
-    
-    driver.find_element(by="id", value="id_password").send_keys("automatedautomated" + Keys.ENTER) # find the password input field by its id and enter the password "automatedautomated"
-    time.sleep(2) # wait for 2 seconds to allow the page to load properly before proceeding to the next step
-    
-    driver.find_element(by="xpath", value="/html/body/nav/div/a").click()
-    time.sleep(5) # wait for 2 seconds to allow the page to load properly before proceeding to the next step
-    
-    element = driver.find_element(by="xpath", value="/html/body/div[1]/h1[2]").text # find the element containing the temperature information using its XPath. This assumes that temp is located in an <h1> tag at the specified location in the HTML structure of the page.
-    return clean_text(element) # get text content of the element, clean it w/ the clean_text function to extract the temp value, return it as a float.
+    while loop_num > 0: # loop until the specified number of iterations has been reached
+        time.sleep(5) # wait for 5 seconds before each iteration 
+        element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[2]") # find the element containing the temperature information using its XPath.
+        text = str(clean_text(element.text)) # get text content of the element, clean it w/ the clean_text function to extract the temp value, convert it to a string
+        write_file(text) # write the cleaned text (temperature value) to a file using the write_file function
+        loop_num -= 1 # decrement the loop counter
+
 
 
 
